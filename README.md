@@ -2,7 +2,7 @@
 
 Library Requirements 
 
-pip install moviepy==1.0.3
-pip install librosa
-pip install pymongo
-pip install mediapipe
+pip install moviepy==1.0.3  
+pip install librosa  
+pip install pymongo  
+pip install mediapipe  

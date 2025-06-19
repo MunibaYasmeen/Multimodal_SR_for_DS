@@ -9,7 +9,9 @@ audio_processor = AudioProcessor()
 # MongoDB setup
 client = MongoClient("mongodb://localhost:27017/")
 db = client["speech_ds"]
-collection = db["features"]
+metadata_col = db["features"]
+audio_col = db["audio_features"]
+visual_col = db["visual_features"]
 
 # Dataset folders
 base_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Dataset")
@@ -27,21 +29,32 @@ for class_name, label in classes.items():
             video_path = os.path.join(folder_path, file)
             
             try:
-    
+                print(f"🧠 Processing {file}...")
+
+                # Extract features
                 audio_feat = audio_processor.extract_mfcc_with_timestamps(video_path)
                 visual_feat = extract_lip_landmarks(video_path)
 
-                # Save to MongoDB
-                doc = {
+                # Save metadata
+                metadata_col.insert_one({
                     "filename": file,
                     "label": label,
-                    "audio_features": audio_feat,  
-                    "visual_features": visual_feat,
                     "modality": "multimodal"
-                }
+                })
 
-                collection.insert_one(doc)
+                # Save audio features
+                audio_col.insert_one({
+                    "filename": file,
+                    "audio_features": audio_feat
+                })
+
+                # Save visual features
+                visual_col.insert_one({
+                    "filename": file,
+                    "visual_features": visual_feat
+                })
+
                 print(f"✅ Inserted: {file}")
-            
+
             except Exception as e:
                 print(f"❌ Failed on {file}: {e}")

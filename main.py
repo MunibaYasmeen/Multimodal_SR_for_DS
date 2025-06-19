@@ -1,4 +1,5 @@
 from Audio_Speech_Recognition.audio_processor import AudioProcessor
+from Video_Speech_Recognition.video_processing import extract_lip_landmarks
 from pymongo import MongoClient
 import os
 
@@ -28,12 +29,14 @@ for class_name, label in classes.items():
             try:
     
                 audio_feat = audio_processor.extract_mfcc_with_timestamps(video_path)
+                visual_feat = extract_lip_landmarks(video_path)
 
                 # Save to MongoDB
                 doc = {
                     "filename": file,
                     "label": label,
-                    "audio_features": audio_feat,  #
+                    "audio_features": audio_feat,  
+                    "visual_features": visual_feat,
                     "modality": "multimodal"
                 }
 
